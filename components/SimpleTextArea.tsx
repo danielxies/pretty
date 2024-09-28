@@ -59,8 +59,8 @@ export default function SimpleTextArea({
     // Initialize dimensions with specific width and height
     const [dimensions, setDimensions] = useState<{ width: number; height: number }>(
         {
-            width: 1222, // Initial width in pixels
-            height: 555, // Initial height in pixels
+            width: 1333, // Initial width in pixels
+            height: 600, // Initial height in pixels
         }
     );
 
