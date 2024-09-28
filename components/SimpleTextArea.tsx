@@ -59,7 +59,7 @@ export default function SimpleTextArea({
     // Initialize dimensions with specific width and height
     const [dimensions, setDimensions] = useState<{ width: number; height: number }>(
         {
-            width: 1333, // Initial width in pixels
+            width: 1266, // Initial width in pixels
             height: 600, // Initial height in pixels
         }
     );
@@ -274,29 +274,44 @@ export default function SimpleTextArea({
 
     // ======== Breakpoint Functionality ========
 
-    // Breakpoints State
-    const [breakpoints, setBreakpoints] = useState<Set<number>>(new Set());
+    // Breakpoints State as an array to maintain order
+    const [breakpoints, setBreakpoints] = useState<number[]>([]);
 
     // Calculate line height based on font size (assuming 1.5 line height)
     const lineHeight = fontSize * 1.5;
 
     // Calculate highlight regions based on breakpoints
-    const sortedBreakpoints = Array.from(breakpoints).sort((a, b) => a - b);
+    const sortedBreakpoints = [...breakpoints].sort((a, b) => a - b);
     const highlightRegions: Array<{ start: number; end: number }> = [];
 
-    for (let i = 0; i < sortedBreakpoints.length - 1; i += 2) {
-        highlightRegions.push({ start: sortedBreakpoints[i], end: sortedBreakpoints[i + 1] });
+    if (sortedBreakpoints.length === 2) {
+        highlightRegions.push({
+            start: sortedBreakpoints[0],
+            end: sortedBreakpoints[1],
+        });
     }
 
     // Function to handle gutter (line number) clicks
     const handleGutterClick = (lineNumber: number) => {
-        setBreakpoints(prev => {
-            const newBreakpoints = new Set(prev);
-            if (newBreakpoints.has(lineNumber)) {
-                newBreakpoints.delete(lineNumber);
+        setBreakpoints((prev) => {
+            const isAlreadyBreakpoint = prev.includes(lineNumber);
+            let newBreakpoints = [...prev];
+
+            if (isAlreadyBreakpoint) {
+                // Remove the breakpoint
+                newBreakpoints = newBreakpoints.filter((ln) => ln !== lineNumber);
             } else {
-                newBreakpoints.add(lineNumber);
+                // Add the breakpoint
+                if (newBreakpoints.length < 2) {
+                    newBreakpoints.push(lineNumber);
+                } else {
+                    // Decide which breakpoint to remove.
+                    // For simplicity, remove the earliest breakpoint.
+                    newBreakpoints.shift();
+                    newBreakpoints.push(lineNumber);
+                }
             }
+
             return newBreakpoints;
         });
     };
@@ -304,7 +319,7 @@ export default function SimpleTextArea({
     // Optional: Handle window resize to update dimensions dynamically
     useEffect(() => {
         const handleResize = () => {
-            setDimensions(prev => ({
+            setDimensions((prev) => ({
                 width: Math.min(window.innerWidth * 0.9, prev.width),
                 height: Math.min(window.innerHeight * 0.9, prev.height),
             }));
@@ -489,7 +504,7 @@ export default function SimpleTextArea({
                                 aria-label={`Toggle breakpoint on line ${index + 1}`}
                             >
                                 {/* Breakpoint Dot */}
-                                {breakpoints.has(index) && (
+                                {breakpoints.includes(index) && (
                                     <span
                                         className="breakpoint-dot"
                                         style={{
@@ -503,7 +518,10 @@ export default function SimpleTextArea({
                                         aria-label={`Breakpoint on line ${index + 1}`}
                                     ></span>
                                 )}
-                                <span className="line-number-text" style={{ paddingLeft: breakpoints.has(index) ? '12px' : '0' }}>
+                                <span
+                                    className="line-number-text"
+                                    style={{ paddingLeft: breakpoints.includes(index) ? '12px' : '0' }}
+                                >
                                     {index + 1}
                                 </span>
                             </div>
