@@ -55,7 +55,7 @@ export default function SimpleTextArea({
     });
 
     // Updated Font Size State
-    const [fontSize, setFontSize] = useState<number>(13); // Default font size set to 13
+    const [fontSize, setFontSize] = useState<number>(11); // Default font size set to 13
 
     // Define font size options
     const fontSizeOptions = [8, 11, 12, 13, 14, 15, 16, 18, 22, 24, 25];
