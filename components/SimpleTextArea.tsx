@@ -34,8 +34,6 @@ hljs.registerLanguage("java", java);
 interface SimpleTextAreaProps {
     prompt: string;
     setPrompt: (prompt: string) => void;
-    charCount: number;
-    setCharCount: (count: number) => void;
 }
 
 // Array of available Highlight.js themes
@@ -51,8 +49,6 @@ const availableThemes = [
 export default function SimpleTextArea({
     prompt,
     setPrompt,
-    charCount,
-    setCharCount,
 }: SimpleTextAreaProps) {
     const [code, setCode] = useState(prompt);
     const [detectedLanguage, setDetectedLanguage] = useState<string>(
@@ -123,7 +119,6 @@ export default function SimpleTextArea({
     const handleCodeChange = (newCode: string) => {
         setCode(newCode);
         setPrompt(newCode);
-        setCharCount(newCode.length);
         debouncedDetectLanguage(newCode);
     };
 

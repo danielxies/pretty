@@ -5,7 +5,6 @@ import { useState } from "react";
 
 export default function Home() {
   const [prompt, setPrompt] = useState("");
-  const [charCount, setCharCount] = useState(0);
 
   return (
     <div className="flex items-center justify-center min-h-screen p-8 font-[family-name:var(--font-geist-sans)]">
@@ -13,8 +12,6 @@ export default function Home() {
         <SimpleTextArea
           prompt={prompt}
           setPrompt={setPrompt}
-          charCount={charCount}
-          setCharCount={setCharCount}
         />
       </main>
     </div>
