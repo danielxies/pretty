@@ -12,6 +12,7 @@ import {
     MoveDiagonal2,
     Plus,
     Minus,
+    Camera,
 } from "lucide-react"; // Import necessary icons
 
 // Import Highlight.js GitHub Theme
@@ -314,13 +315,10 @@ export default function SimpleTextArea({
                         {detectedLanguage}
                     </span>
 
-                    {/* Char count and Font Size Controls */}
+                    {/* Camera Icon and Font Size Controls */}
                     <div className="flex items-center space-x-4">
-                        {/* Char Count */}
-                        <span className="text-[#4f46e5] font-mono">
-                            {charCount}{" "}
-                            <span className="text-black dark:text-white">chars</span>
-                        </span>
+                        {/* Camera Icon */}
+                        <Camera className="w-5 h-5 text-gray-500 cursor-pointer hover:text-gray-700" />
 
                         {/* Font Size Controls */}
                         <div className="flex items-center space-x-1">
