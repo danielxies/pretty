@@ -1,4 +1,6 @@
-// eslint-disable-next-line react-hooks/exhaustive-deps
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+
 import React, { useState, useEffect, useRef } from "react";
 import Editor from "react-simple-code-editor";
 import hljs from "highlight.js/lib/core";
