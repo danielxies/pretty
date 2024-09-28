@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image";
 import SimpleTextArea from "@/components/SimpleTextArea";
 import { useState } from "react";
 
