@@ -43,7 +43,7 @@ const availableThemes = [
     "monokai",
     "vs2015",
     "nord",
-    "tokyo-night-dark"
+    "tokyo-night-dark",
 ];
 
 export default function SimpleTextArea({
@@ -56,13 +56,15 @@ export default function SimpleTextArea({
     );
     const [currentTheme, setCurrentTheme] = useState("github-dark");
 
-    // State for dimensions with initial width set to 1111px and height to 555px
-    const [dimensions, setDimensions] = useState<{ width: number; height: number }>({
-        width: 1111, // Initial width in pixels
-        height: 555, // Initial height in pixels
-    });
+    // Initialize dimensions with specific width and height
+    const [dimensions, setDimensions] = useState<{ width: number; height: number }>(
+        {
+            width: 1222, // Initial width in pixels
+            height: 555, // Initial height in pixels
+        }
+    );
 
-    // Updated Font Size State
+    // Font Size State
     const [fontSize, setFontSize] = useState<number>(11); // Default font size set to 11
 
     // Define font size options
@@ -270,6 +272,50 @@ export default function SimpleTextArea({
         };
     }, [currentTheme]);
 
+    // ======== Breakpoint Functionality ========
+
+    // Breakpoints State
+    const [breakpoints, setBreakpoints] = useState<Set<number>>(new Set());
+
+    // Calculate line height based on font size (assuming 1.5 line height)
+    const lineHeight = fontSize * 1.5;
+
+    // Calculate highlight regions based on breakpoints
+    const sortedBreakpoints = Array.from(breakpoints).sort((a, b) => a - b);
+    const highlightRegions: Array<{ start: number; end: number }> = [];
+
+    for (let i = 0; i < sortedBreakpoints.length - 1; i += 2) {
+        highlightRegions.push({ start: sortedBreakpoints[i], end: sortedBreakpoints[i + 1] });
+    }
+
+    // Function to handle gutter (line number) clicks
+    const handleGutterClick = (lineNumber: number) => {
+        setBreakpoints(prev => {
+            const newBreakpoints = new Set(prev);
+            if (newBreakpoints.has(lineNumber)) {
+                newBreakpoints.delete(lineNumber);
+            } else {
+                newBreakpoints.add(lineNumber);
+            }
+            return newBreakpoints;
+        });
+    };
+
+    // Optional: Handle window resize to update dimensions dynamically
+    useEffect(() => {
+        const handleResize = () => {
+            setDimensions(prev => ({
+                width: Math.min(window.innerWidth * 0.9, prev.width),
+                height: Math.min(window.innerHeight * 0.9, prev.height),
+            }));
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+
     return (
         <div className="flex justify-center items-center w-full h-full relative">
             <div
@@ -282,6 +328,8 @@ export default function SimpleTextArea({
                         ? "none"
                         : "width 0.2s, height 0.2s",
                     boxSizing: "border-box",
+                    display: "flex",
+                    flexDirection: "column",
                 }}
             >
                 {/* Resize Handles */}
@@ -359,8 +407,6 @@ export default function SimpleTextArea({
 
                     {/* Right Side Controls */}
                     <div className="flex items-center space-x-4">
-
-
                         {/* Camera Icon */}
                         <Camera className="w-5 h-5 text-gray-500 cursor-pointer hover:text-gray-700" />
                         {/* Theme Dropdown */}
@@ -408,10 +454,9 @@ export default function SimpleTextArea({
 
                 {/* Editor Container */}
                 <div
-                    className="w-full border-none resize-none overflow-y-auto overflow-x-hidden focus:outline-none focus:ring-0 bg-[#FFF2D7] dark:bg-neutral-900 rounded-b-lg"
+                    className="w-full border-none resize-none overflow-y-auto overflow-x-hidden focus:outline-none focus:ring-0 bg-[#FFF2D7] dark:bg-neutral-900 rounded-b-lg relative flex flex-row"
                     style={{
                         fontFamily: "GggSans, monospace",
-                        padding: "15px 0 10px 12px", // Added 12px left padding
                         height: `calc(${dimensions.height}px - 40px)`, // Adjust based on header height
                         width: `calc(${dimensions.width}px - 1px)`, // Adjust based on header width
                         overflowY: "auto",
@@ -419,29 +464,98 @@ export default function SimpleTextArea({
                         boxSizing: "border-box",
                     }}
                 >
-                    <Editor
-                        value={code}
-                        onValueChange={handleCodeChange}
-                        highlight={highlightCode}
-                        padding={0} // Remove padding from Editor, handled by container
-                        className="custom-editor"
-                        textareaId="codeArea"
-                        textareaClassName="code-textarea"
+                    {/* Line Numbers Gutter */}
+                    <div
+                        className="line-numbers gutter text-gray-500 dark:text-gray-400 text-right pr-2 select-none"
                         style={{
-                            minHeight: "100%",
-                            width: "100%",
-                            outline: "none",
-                            border: "none",
-                            resize: "none",
-                            backgroundColor: "transparent",
-                            color: "inherit",
-                            whiteSpace: "pre-wrap",
-                            wordWrap: "break-word",
-                            overflow: "hidden", // Let the container handle scrolling
-                            fontFamily: "inherit",
-                            fontSize: `${fontSize}px`, // Apply dynamic font size
+                            userSelect: 'none',
+                            paddingRight: '8px',
+                            paddingLeft: '15px', // Added paddingLeft to move line numbers to the right
+                            minWidth: '40px',
+                            boxSizing: 'border-box',
+                            fontSize: `${fontSize}px`, // Match editor's font size
+                            lineHeight: `${lineHeight}px`, // Match editor's line height
+                            background: 'transparent', // Ensure no background
+                            display: 'flex',
+                            flexDirection: 'column',
                         }}
-                    />
+                    >
+                        {code.split('\n').map((_, index) => (
+                            <div
+                                key={index}
+                                className="line-number relative flex items-center"
+                                style={{ height: `${lineHeight}px`, cursor: 'pointer', position: 'relative' }}
+                                onClick={() => handleGutterClick(index)}
+                                aria-label={`Toggle breakpoint on line ${index + 1}`}
+                            >
+                                {/* Breakpoint Dot */}
+                                {breakpoints.has(index) && (
+                                    <span
+                                        className="breakpoint-dot"
+                                        style={{
+                                            position: 'absolute',
+                                            left: '-10px',
+                                            width: '8px',
+                                            height: '8px',
+                                            borderRadius: '50%',
+                                            backgroundColor: '#818cf8',
+                                        }}
+                                        aria-label={`Breakpoint on line ${index + 1}`}
+                                    ></span>
+                                )}
+                                <span className="line-number-text" style={{ paddingLeft: breakpoints.has(index) ? '12px' : '0' }}>
+                                    {index + 1}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                    {/* Editor and Highlight Overlay */}
+                    <div className="editor-wrapper relative flex-1">
+                        {/* Highlight Overlay */}
+                        {highlightRegions.map((region, idx) => (
+                            <div
+                                key={idx}
+                                className="absolute bg-blue-500 bg-opacity-25 rounded pointer-events-none"
+                                style={{
+                                    top: `${region.start * lineHeight}px`,
+                                    height: `${(region.end - region.start + 1) * lineHeight}px`,
+                                    left: 0, // Gutter width is handled
+                                    right: 0,
+                                    zIndex: 0, // Behind the editor
+                                }}
+                            >
+                                {/* Optional: Additional controls can be added here */}
+                            </div>
+                        ))}
+
+                        {/* Editor Component */}
+                        <Editor
+                            value={code}
+                            onValueChange={handleCodeChange}
+                            highlight={highlightCode}
+                            padding={0} // Remove padding from Editor, handled by container
+                            className="custom-editor"
+                            textareaId="codeArea"
+                            textareaClassName="code-textarea"
+                            style={{
+                                minHeight: "100%",
+                                width: "100%",
+                                outline: "none",
+                                border: "none",
+                                resize: "none",
+                                backgroundColor: "transparent",
+                                color: "inherit",
+                                whiteSpace: "pre-wrap",
+                                wordWrap: "break-word",
+                                overflow: "hidden", // Let the container handle scrolling
+                                fontFamily: "inherit",
+                                fontSize: `${fontSize}px`, // Apply dynamic font size
+                                lineHeight: `${lineHeight}px`,
+                                position: "relative",
+                                zIndex: 1, // Ensure text is above highlight
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
         </div>
