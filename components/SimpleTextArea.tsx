@@ -49,14 +49,14 @@ export default function SimpleTextArea({
         "No Language Detected"
     );
 
-    // State for dimensions
+    // State for dimensions with initial width set to 1000px
     const [dimensions, setDimensions] = useState<{ width: number; height: number }>({
-        width: 2000, // Initial width in pixels
-        height: 500, // Initial height in pixels
+        width: 1111, // Initial width in pixels
+        height: 555, // Initial height in pixels
     });
 
     // Updated Font Size State
-    const [fontSize, setFontSize] = useState<number>(11); // Default font size set to 13
+    const [fontSize, setFontSize] = useState<number>(11); // Default font size set to 11
 
     // Define font size options
     const fontSizeOptions = [8, 11, 12, 13, 14, 15, 16, 18, 22, 24, 25];
@@ -171,9 +171,9 @@ export default function SimpleTextArea({
         newWidth = Math.max(newWidth, 300); // minimum width
         newHeight = Math.max(newHeight, 200); // minimum height
 
-        // Optional: Set maximum size based on viewport or desired limits
-        const maxWidth = window.innerWidth * 2; // Allow up to 200% of viewport width
-        const maxHeight = window.innerHeight * 2; // Similarly for height
+        // Set maximum size based on 90% of viewport
+        const maxWidth = window.innerWidth * 0.9; // 90% of viewport width
+        const maxHeight = window.innerHeight * 0.9; // 90% of viewport height
         newWidth = Math.min(newWidth, maxWidth);
         newHeight = Math.min(newHeight, maxHeight);
 
@@ -354,8 +354,9 @@ export default function SimpleTextArea({
                     className="w-full border-none resize-none overflow-y-auto overflow-x-hidden focus:outline-none focus:ring-0 bg-[#FFF2D7] dark:bg-neutral-900 rounded-b-lg"
                     style={{
                         fontFamily: "GggSans, monospace",
-                        padding: "10px 0 10px 12px", // Added 2px left padding
+                        padding: "15px 0 10px 12px", // Added 12px left padding
                         height: `calc(${dimensions.height}px - 40px)`, // Adjust based on header height
+                        width: `calc(${dimensions.width}px - 1px)`, // Adjust based on header width
                         overflowY: "auto",
                         overflowX: "hidden",
                         boxSizing: "border-box",
