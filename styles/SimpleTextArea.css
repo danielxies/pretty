@@ -1,0 +1,91 @@
+/* styles/SimpleTextArea.css */
+
+/* Remove boldness from syntax highlighting */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-symbol,
+.hljs-title,
+.hljs-section,
+.hljs-name,
+.hljs-attribute,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-link,
+.hljs-selector-class,
+.hljs-selector-id,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-bullet,
+.hljs-code,
+.hljs-comment,
+.hljs-doctag,
+.hljs-formula,
+.hljs-meta,
+.hljs-regexp,
+.hljs-string,
+.hljs-subst,
+.hljs-type,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-addition,
+.hljs-deletion {
+  font-weight: normal !important;
+}
+
+/* Apply custom font to the code editor */
+.custom-editor {
+  font-family: 'GggSans', monospace;
+}
+
+/* Remove scrollbar from the Editor's internal textarea */
+.custom-editor textarea {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+}
+
+.custom-editor textarea::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Remove border and outline from the internal textarea */
+.custom-editor textarea {
+  border: none;
+  outline: none;
+  resize: none; /* Prevent manual resizing */
+}
+
+.select {
+  border: none;
+  outline: none;
+}
+
+/* Ensure the pre tag wraps content */
+.editor-container pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Hide spinners for number inputs */
+
+/* Chrome, Safari, Edge, Opera */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Optional: Remove arrows in IE */
+input[type=number]::-ms-clear,
+input[type=number]::-ms-reveal {
+  display: none;
+}
