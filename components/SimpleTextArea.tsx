@@ -15,8 +15,8 @@ import {
     Camera,
 } from "lucide-react"; // Import necessary icons
 
-// Import Highlight.js GitHub Theme
-import "highlight.js/styles/github-dark.css";
+// Removed static import of GitHub Dark theme
+// import "highlight.js/styles/github-dark.css";
 import "../styles/SimpleTextArea.css";
 
 // Import languages (you can add more if needed)
@@ -38,6 +38,16 @@ interface SimpleTextAreaProps {
     setCharCount: (count: number) => void;
 }
 
+// Array of available Highlight.js themes
+const availableThemes = [
+    "github-dark",
+    "github",
+    "monokai",
+    "vs2015",
+    "nord",
+    "tokyo-night-dark"
+];
+
 export default function SimpleTextArea({
     prompt,
     setPrompt,
@@ -48,8 +58,9 @@ export default function SimpleTextArea({
     const [detectedLanguage, setDetectedLanguage] = useState<string>(
         "No Language Detected"
     );
+    const [currentTheme, setCurrentTheme] = useState("github-dark");
 
-    // State for dimensions with initial width set to 1000px
+    // State for dimensions with initial width set to 1111px and height to 555px
     const [dimensions, setDimensions] = useState<{ width: number; height: number }>({
         width: 1111, // Initial width in pixels
         height: 555, // Initial height in pixels
@@ -69,6 +80,9 @@ export default function SimpleTextArea({
         width: dimensions.width,
         height: dimensions.height,
     });
+
+    // Ref to manage the theme link element
+    const themeLinkRef = useRef<HTMLLinkElement | null>(null);
 
     // Debounced language detection
     const debouncedDetectLanguage = useRef(
@@ -228,6 +242,39 @@ export default function SimpleTextArea({
         }
     };
 
+    // Function to handle theme change
+    const handleThemeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newTheme = e.target.value;
+        setCurrentTheme(newTheme);
+    };
+
+    // useEffect to manage the theme link element
+    useEffect(() => {
+        // If the link element doesn't exist, create it
+        if (!themeLinkRef.current) {
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/${currentTheme}.min.css`;
+            link.id = "hljs-theme-link";
+            document.head.appendChild(link);
+            themeLinkRef.current = link;
+        } else {
+            // Update the href to the new theme
+            themeLinkRef.current.href = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/${currentTheme}.min.css`;
+        }
+
+        // Trigger a re-render by updating the code state
+        setCode((prevCode) => prevCode);
+
+        // Cleanup function to remove the link if component unmounts
+        return () => {
+            if (themeLinkRef.current) {
+                document.head.removeChild(themeLinkRef.current);
+                themeLinkRef.current = null;
+            }
+        };
+    }, [currentTheme]);
+
     return (
         <div className="flex justify-center items-center w-full h-full relative">
             <div
@@ -315,10 +362,25 @@ export default function SimpleTextArea({
                         {detectedLanguage}
                     </span>
 
-                    {/* Camera Icon and Font Size Controls */}
+                    {/* Right Side Controls */}
                     <div className="flex items-center space-x-4">
+
+
                         {/* Camera Icon */}
                         <Camera className="w-5 h-5 text-gray-500 cursor-pointer hover:text-gray-700" />
+                        {/* Theme Dropdown */}
+                        <select
+                            value={currentTheme}
+                            onChange={handleThemeChange}
+                            className="border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white font-mono text-sm"
+                            aria-label="Select theme"
+                        >
+                            {availableThemes.map((theme) => (
+                                <option key={theme} value={theme}>
+                                    {theme}
+                                </option>
+                            ))}
+                        </select>
 
                         {/* Font Size Controls */}
                         <div className="flex items-center space-x-1">
@@ -331,7 +393,7 @@ export default function SimpleTextArea({
                             <select
                                 value={fontSize}
                                 onChange={handleFontSizeSelect}
-                                className="w-16 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white"
+                                className="w-16 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white font-sm"
                                 aria-label="Select font size"
                             >
                                 {fontSizeOptions.map((size) => (
