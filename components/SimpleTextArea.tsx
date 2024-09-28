@@ -310,7 +310,7 @@ export default function SimpleTextArea({
                 {/* Header Section */}
                 <div className="bg-[#FFF2D7] dark:bg-neutral-900 p-2 rounded-t-lg flex justify-between items-center text-black dark:text-white">
                     {/* Detected Language Display */}
-                    <span className="text-indigo-400 font-mono pl-2">
+                    <span className="text-indigo-400 font-mono">
                         {detectedLanguage}
                     </span>
 
@@ -384,7 +384,6 @@ export default function SimpleTextArea({
                             overflow: "hidden", // Let the container handle scrolling
                             fontFamily: "inherit",
                             fontSize: `${fontSize}px`, // Apply dynamic font size
-                            paddingLeft: "6px" // Added left padding here
                         }}
                     />
                 </div>
