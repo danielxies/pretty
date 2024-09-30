@@ -47,6 +47,33 @@ const availableThemes = [
     "tokyo-night-dark",
 ];
 
+// New: Lists for naming convention
+const adjectives = [
+    "ostentatious",
+    "brilliant",
+    "mysterious",
+    "vibrant",
+    "graceful",
+    "majestic",
+    "radiant",
+    "serene",
+    "luminous",
+    "enigmatic",
+];
+
+const oceanLife = [
+    "narwhal",
+    "dolphin",
+    "seahorse",
+    "octopus",
+    "jellyfish",
+    "coral",
+    "starfish",
+    "shark",
+    "whale",
+    "crab",
+];
+
 export default function SimpleTextArea({
     prompt,
     setPrompt,
@@ -375,7 +402,7 @@ export default function SimpleTextArea({
 
             // Create a temporary div to render the snippet
             const tempDiv = document.createElement("div");
-            
+
             tempDiv.style.position = "absolute";
             tempDiv.style.top = "-9999px";
             tempDiv.style.left = "-9999px";
@@ -430,17 +457,22 @@ export default function SimpleTextArea({
             document.body.removeChild(tempDiv);
             document.head.removeChild(link);
 
+            // Generate a random filename
+            const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+            const randomOceanLife = oceanLife[Math.floor(Math.random() * oceanLife.length)];
+            const fileName = `${randomAdjective}-${randomOceanLife}.png`;
+
             // Convert the canvas to a data URL and trigger download
             const imgData = canvas.toDataURL("image/png");
 
             const linkDownload = document.createElement("a");
             linkDownload.href = imgData;
-            linkDownload.download = "code_snippet.png";
+            linkDownload.download = fileName;
             document.body.appendChild(linkDownload);
             linkDownload.click();
             document.body.removeChild(linkDownload);
 
-            console.log("Screenshot generated and downloaded successfully.");
+            console.log(`Screenshot "${fileName}" generated and downloaded successfully.`);
         } catch (error) {
             console.error("Error generating screenshot:", error);
             alert("An error occurred while generating the screenshot. Please check the console for details.");
@@ -530,14 +562,14 @@ export default function SimpleTextArea({
                 </div>
 
                 {/* Header Section */}
-                <div className="bg-[#18181b] dark:bg-neutral-900 p-2 rounded-t-lg flex justify-between items-center text-white" /* Changed text color to white */>
+                <div className="bg-[#18181b] dark:bg-neutral-900 p-2 rounded-t-lg flex flex-wrap justify-between items-center text-white" /* Changed text color to white and added flex-wrap */>
                     {/* Detected Language Display */}
-                    <span className="text-indigo-400 font-mono">
+                    <span className="text-indigo-400 font-mono mb-2 sm:mb-0">
                         {detectedLanguage !== "plaintext" ? detectedLanguage.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()) : "No Language Detected"}
                     </span>
 
                     {/* Right Side Controls */}
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-4 flex-wrap">
                         {/* Camera Icon */}
                         <Camera
                             className="w-5 h-5 text-gray-300 cursor-pointer hover:text-gray-500" // Adjusted text color
@@ -548,7 +580,7 @@ export default function SimpleTextArea({
                         <select
                             value={currentTheme}
                             onChange={handleThemeChange}
-                            className="border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white font-mono text-sm"
+                            className="border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white font-mono text-sm mb-2 sm:mb-0"
                             aria-label="Select theme"
                         >
                             {availableThemes.map((theme) => (
