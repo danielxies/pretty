@@ -37,14 +37,16 @@ interface SimpleTextAreaProps {
     setPrompt: (prompt: string) => void;
 }
 
-// Array of available Highlight.js themes
+// Updated: Array of available Highlight.js themes with display names
 const availableThemes = [
-    "github-dark",
-    "github",
-    "monokai",
-    "vs2015",
-    "nord",
-    "tokyo-night-dark",
+    { name: "github-dark", displayName: "github dark" },
+    { name: "github", displayName: "github" },
+    { name: "monokai", displayName: "monokai" },
+    { name: "vs2015", displayName: "vs2015" },
+    { name: "nord", displayName: "nord" },
+    { name: "tokyo-night-dark", displayName: "tokyo dark" },
+    { name: "atom-one-dark", displayName: "atom dark" },
+    { name: "hybrid", displayName: "hybrid" },
 ];
 
 // New: Lists for naming convention
@@ -400,7 +402,7 @@ export default function SimpleTextArea({
             tempDiv.style.position = "absolute";
             tempDiv.style.top = "-9999px";
             tempDiv.style.left = "-9999px";
-            tempDiv.style.padding = "20px 20px 35px 20px"; // Increased bottom padding by 15px
+            tempDiv.style.padding = "20px 88px 35px 20px"; // Increased bottom padding by 15px
             tempDiv.style.background = "#18181b"; // Neutral-900 background
             tempDiv.style.fontFamily = "monospace";
             tempDiv.style.fontSize = `${fontSize}px`;
@@ -578,8 +580,8 @@ export default function SimpleTextArea({
                             aria-label="Select theme"
                         >
                             {availableThemes.map((theme) => (
-                                <option key={theme} value={theme}>
-                                    {theme}
+                                <option key={theme.name} value={theme.name}>
+                                    {theme.displayName}
                                 </option>
                             ))}
                         </select>
