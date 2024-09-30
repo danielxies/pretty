@@ -14,6 +14,7 @@ import {
     Minus,
     Camera,
 } from "lucide-react"; // Import necessary icons
+import html2canvas from "html2canvas"; // Import html2canvas
 
 // Removed static import of GitHub Dark theme
 // import "highlight.js/styles/github-dark.css";
@@ -101,7 +102,7 @@ export default function SimpleTextArea({
     // Function to detect language
     const detectLanguage = (code: string) => {
         if (!code.trim()) {
-            setDetectedLanguage("No Language Detected");
+            setDetectedLanguage("plaintext"); // Default to plaintext
             return;
         }
 
@@ -111,9 +112,11 @@ export default function SimpleTextArea({
             const displayLang = result.language
                 .replace(/-/g, " ")
                 .replace(/\b\w/g, (char) => char.toUpperCase());
-            setDetectedLanguage(displayLang);
+            setDetectedLanguage(result.language); // Store actual language code
+            console.log(`Detected language: ${result.language}`);
         } else {
-            setDetectedLanguage("No Language Detected");
+            setDetectedLanguage("plaintext"); // Default to plaintext
+            console.log("No language detected. Defaulting to plaintext.");
         }
     };
 
@@ -280,17 +283,6 @@ export default function SimpleTextArea({
     // Calculate line height based on font size (assuming 1.5 line height)
     const lineHeight = fontSize * 1.5;
 
-    // Calculate highlight regions based on breakpoints
-    const sortedBreakpoints = [...breakpoints].sort((a, b) => a - b);
-    const highlightRegions: Array<{ start: number; end: number }> = [];
-
-    if (sortedBreakpoints.length === 2) {
-        highlightRegions.push({
-            start: sortedBreakpoints[0],
-            end: sortedBreakpoints[1],
-        });
-    }
-
     // Function to handle gutter (line number) clicks
     const handleGutterClick = (lineNumber: number) => {
         setBreakpoints((prev) => {
@@ -312,9 +304,37 @@ export default function SimpleTextArea({
                 }
             }
 
+            console.log(`Breakpoints set to: ${newBreakpoints.map((ln) => ln + 1).join(", ")}`);
             return newBreakpoints;
         });
     };
+
+    // useEffect to validate breakpoints when code changes
+    useEffect(() => {
+        const numLines = code.split('\n').length;
+        setBreakpoints((prev) =>
+            prev.filter((line) => line < numLines)
+        );
+    }, [code]);
+
+    // Calculate highlight regions based on breakpoints
+    const sortedBreakpoints = [...breakpoints].sort((a, b) => a - b);
+    const highlightRegions: Array<{ start: number; end: number }> = [];
+
+    if (sortedBreakpoints.length === 2) {
+        const [start, end] = sortedBreakpoints;
+        // Ensure start is less than end
+        if (start < end) {
+            // Check if there's any text between start and end
+            const hasText = code
+                .split('\n')
+                .slice(start, end + 1)
+                .some(line => line.trim() !== '');
+            if (hasText) {
+                highlightRegions.push({ start, end });
+            }
+        }
+    }
 
     // Optional: Handle window resize to update dimensions dynamically
     useEffect(() => {
@@ -331,11 +351,107 @@ export default function SimpleTextArea({
         };
     }, []);
 
+    // ======== Screenshot Functionality ========
+
+    // Ref for the hidden screenshot container
+    const screenshotRef = useRef<HTMLDivElement>(null);
+
+    // Function to generate and download the screenshot
+    const generateScreenshot = async () => {
+        try {
+            if (sortedBreakpoints.length !== 2) {
+                alert("Please set exactly two breakpoints to generate a screenshot.");
+                return;
+            }
+
+            const [startLine, endLine] = sortedBreakpoints;
+            const snippetLines = code.split('\n').slice(startLine, endLine + 1);
+            const snippetCode = snippetLines.join('\n');
+
+            if (!snippetCode.trim()) {
+                alert("Selected lines contain no code to screenshot.");
+                return;
+            }
+
+            // Create a temporary div to render the snippet
+            const tempDiv = document.createElement("div");
+            
+            tempDiv.style.position = "absolute";
+            tempDiv.style.top = "-9999px";
+            tempDiv.style.left = "-9999px";
+            tempDiv.style.padding = "20px 20px 35px 20px"; // Increased bottom padding by 15px
+            tempDiv.style.background = "#18181b"; // Neutral-900 background
+            tempDiv.style.fontFamily = "monospace";
+            tempDiv.style.fontSize = `${fontSize}px`;
+            tempDiv.style.lineHeight = `${lineHeight}px`;
+            tempDiv.style.whiteSpace = "pre-wrap";
+            tempDiv.style.wordWrap = "break-word";
+            tempDiv.style.color = "white"; // Set text color to white for dark background
+
+            // Apply the current Highlight.js theme
+            const themeStylesheet = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/${currentTheme}.min.css`;
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = themeStylesheet;
+            document.head.appendChild(link);
+
+            // Wait for the stylesheet to load
+            await new Promise<void>((resolve) => {
+                link.onload = () => resolve();
+                link.onerror = () => {
+                    console.error("Stylesheet failed to load");
+                    resolve();
+                };
+                // Add a timeout in case the stylesheet doesn't load
+                setTimeout(resolve, 3000);
+            });
+
+            // Create a pre element to hold the code
+            const pre = document.createElement("pre");
+            const languageToUse = detectedLanguage !== "plaintext" ? detectedLanguage : "plaintext";
+            pre.innerHTML = hljs.highlight(snippetCode, { language: languageToUse }).value;
+            pre.style.margin = "0";
+            pre.style.padding = "0";
+            pre.style.background = "transparent"; // Ensure background is transparent
+            pre.style.color = "inherit"; // Inherit text color
+
+            tempDiv.appendChild(pre);
+            document.body.appendChild(tempDiv);
+
+            // Use html2canvas to capture the tempDiv
+            const canvas = await html2canvas(tempDiv, {
+                backgroundColor: null, // Transparent background if possible
+                scale: 3, // Adjusted scale for high resolution without performance issues
+                useCORS: true, // Enable CORS if needed
+                logging: true, // Enable logging for debugging
+            });
+
+            // Remove the temporary div and stylesheet
+            document.body.removeChild(tempDiv);
+            document.head.removeChild(link);
+
+            // Convert the canvas to a data URL and trigger download
+            const imgData = canvas.toDataURL("image/png");
+
+            const linkDownload = document.createElement("a");
+            linkDownload.href = imgData;
+            linkDownload.download = "code_snippet.png";
+            document.body.appendChild(linkDownload);
+            linkDownload.click();
+            document.body.removeChild(linkDownload);
+
+            console.log("Screenshot generated and downloaded successfully.");
+        } catch (error) {
+            console.error("Error generating screenshot:", error);
+            alert("An error occurred while generating the screenshot. Please check the console for details.");
+        }
+    };
+
     return (
         <div className="flex justify-center items-center w-full h-full relative">
             <div
                 ref={containerRef}
-                className="relative rounded-2xl bg-[#FFF2D7] dark:bg-neutral-900 shadow-lg"
+                className="relative rounded-2xl bg-[#18181b] dark:bg-neutral-900 shadow-lg" // Changed light background to dark
                 style={{
                     width: `${dimensions.width}px`,
                     height: `${dimensions.height}px`,
@@ -414,21 +530,25 @@ export default function SimpleTextArea({
                 </div>
 
                 {/* Header Section */}
-                <div className="bg-[#FFF2D7] dark:bg-neutral-900 p-2 rounded-t-lg flex justify-between items-center text-black dark:text-white">
+                <div className="bg-[#18181b] dark:bg-neutral-900 p-2 rounded-t-lg flex justify-between items-center text-white" /* Changed text color to white */>
                     {/* Detected Language Display */}
                     <span className="text-indigo-400 font-mono">
-                        {detectedLanguage}
+                        {detectedLanguage !== "plaintext" ? detectedLanguage.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()) : "No Language Detected"}
                     </span>
 
                     {/* Right Side Controls */}
                     <div className="flex items-center space-x-4">
                         {/* Camera Icon */}
-                        <Camera className="w-5 h-5 text-gray-500 cursor-pointer hover:text-gray-700" />
+                        <Camera
+                            className="w-5 h-5 text-gray-300 cursor-pointer hover:text-gray-500" // Adjusted text color
+                            onClick={generateScreenshot}
+                            aria-label="Download Screenshot"
+                        />
                         {/* Theme Dropdown */}
                         <select
                             value={currentTheme}
                             onChange={handleThemeChange}
-                            className="border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white font-mono text-sm"
+                            className="border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white font-mono text-sm"
                             aria-label="Select theme"
                         >
                             {availableThemes.map((theme) => (
@@ -441,7 +561,7 @@ export default function SimpleTextArea({
                         {/* Font Size Controls */}
                         <div className="flex items-center space-x-1">
                             <Minus
-                                className="w-4 h-4 text-gray-500 cursor-pointer hover:text-gray-700"
+                                className="w-4 h-4 text-gray-300 cursor-pointer hover:text-gray-500" // Adjusted text color
                                 onClick={decreaseFontSize}
                                 aria-label="Decrease font size"
                             />
@@ -449,7 +569,7 @@ export default function SimpleTextArea({
                             <select
                                 value={fontSize}
                                 onChange={handleFontSizeSelect}
-                                className="w-16 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white font-sm"
+                                className="w-16 text-center border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white font-sm"
                                 aria-label="Select font size"
                             >
                                 {fontSizeOptions.map((size) => (
@@ -459,7 +579,7 @@ export default function SimpleTextArea({
                                 ))}
                             </select>
                             <Plus
-                                className="w-4 h-4 text-gray-500 cursor-pointer hover:text-gray-700"
+                                className="w-4 h-4 text-gray-300 cursor-pointer hover:text-gray-500" // Adjusted text color
                                 onClick={increaseFontSize}
                                 aria-label="Increase font size"
                             />
@@ -469,9 +589,9 @@ export default function SimpleTextArea({
 
                 {/* Editor Container */}
                 <div
-                    className="w-full border-none resize-none overflow-y-auto overflow-x-hidden focus:outline-none focus:ring-0 bg-[#FFF2D7] dark:bg-neutral-900 rounded-b-lg relative flex flex-row"
+                    className="w-full border-none resize-none overflow-y-auto overflow-x-hidden focus:outline-none focus:ring-0 bg-[#18181b] dark:bg-neutral-900 rounded-b-lg relative flex flex-row" // Changed background
                     style={{
-                        fontFamily: "GggSans, monospace",
+                        fontFamily: "monospace", // Changed from "GggSans, monospace" to "monospace"
                         height: `calc(${dimensions.height}px - 40px)`, // Adjust based on header height
                         width: `calc(${dimensions.width}px - 1px)`, // Adjust based on header width
                         overflowY: "auto",
@@ -481,7 +601,7 @@ export default function SimpleTextArea({
                 >
                     {/* Line Numbers Gutter */}
                     <div
-                        className="line-numbers gutter text-gray-500 dark:text-gray-400 text-right pr-2 select-none"
+                        className="line-numbers gutter text-gray-400 dark:text-gray-300 text-right pr-2 select-none"
                         style={{
                             userSelect: 'none',
                             paddingRight: '8px',
@@ -520,7 +640,7 @@ export default function SimpleTextArea({
                                 )}
                                 <span
                                     className="line-number-text"
-                                    style={{ paddingLeft: breakpoints.includes(index) ? '12px' : '0' }}
+                                    style={{ paddingLeft: breakpoints.includes(index) ? '12px' : '0', color: 'inherit' }}
                                 >
                                     {index + 1}
                                 </span>
