@@ -136,9 +136,6 @@ export default function SimpleTextArea({
         const result = hljs.highlightAuto(code, hljs.listLanguages());
 
         if (result.language) {
-            const displayLang = result.language
-                .replace(/-/g, " ")
-                .replace(/\b\w/g, (char) => char.toUpperCase());
             setDetectedLanguage(result.language); // Store actual language code
             console.log(`Detected language: ${result.language}`);
         } else {
@@ -378,10 +375,7 @@ export default function SimpleTextArea({
         };
     }, []);
 
-    // ======== Screenshot Functionality ========
-
-    // Ref for the hidden screenshot container
-    const screenshotRef = useRef<HTMLDivElement>(null);
+    // ======== Screenshot Functionality ======= //
 
     // Function to generate and download the screenshot
     const generateScreenshot = async () => {
