@@ -13,6 +13,7 @@ import {
     Plus,
     Minus,
     Camera,
+    RotateCcw, // Import the rotate-ccw icon
 } from "lucide-react"; // Import necessary icons
 import html2canvas from "html2canvas"; // Import html2canvas
 
@@ -33,20 +34,20 @@ hljs.registerLanguage("python", python);
 hljs.registerLanguage("java", java);
 
 interface SimpleTextAreaProps {
-    prompt: string;
-    setPrompt: (prompt: string) => void;
+    prompt?: string; // Make prompt optional
+    setPrompt?: (prompt: string) => void; // Make setPrompt optional
 }
 
 // Updated: Array of available Highlight.js themes with display names
 const availableThemes = [
-    { name: "github-dark", displayName: "github dark" },
-    { name: "github", displayName: "github" },
-    { name: "monokai", displayName: "monokai" },
-    { name: "vs2015", displayName: "vs2015" },
-    { name: "nord", displayName: "nord" },
-    { name: "tokyo-night-dark", displayName: "tokyo dark" },
-    { name: "atom-one-dark", displayName: "atom dark" },
-    { name: "hybrid", displayName: "hybrid" },
+    { name: "github-dark", displayName: "GitHub Dark" },
+    { name: "github", displayName: "GitHub" },
+    { name: "monokai", displayName: "Monokai" },
+    { name: "vs2015", displayName: "VS2015" },
+    { name: "nord", displayName: "Nord" },
+    { name: "tokyo-night-dark", displayName: "Tokyo Dark" },
+    { name: "atom-one-dark", displayName: "Atom Dark" },
+    { name: "hybrid", displayName: "Hybrid" },
 ];
 
 // New: Lists for naming convention
@@ -76,11 +77,39 @@ const oceanLife = [
     "crab",
 ];
 
+// Example of Python syntax for defaultCode
+const defaultCode = `shout("This is a tool to help you take code snippet screenshots for your presentations.");
+type("try it below");
+
+# <--------- click here !!
+                                                
+"""
+\`;-\.          ___,
+  \`.\`\\_...._/\\.\`-"\`
+    \\        /      ,
+    /()   () \\    .' \`-._
+   |)  .    ()\\  /   _.'
+   \\  -'-     ,; '. <
+    ;.__     ,;|   > \\
+   / ,    / ,  |.-'.-'
+  (_/    (_/ ,;|.<\`
+    \\    ,     ;-\`
+>   \\    /
+    (_,-'\`> .'
+jgs      (_,'                          
+"""
+
+# <--------- click here !!
+
+shout(f"Now press the {Camera} icon to take a picture");
+credits("detection and canvas powered by highlightJS");`;
+
 export default function SimpleTextArea({
     prompt,
     setPrompt,
 }: SimpleTextAreaProps) {
-    const [code, setCode] = useState(prompt);
+    // Initialize code with prompt or defaultCode using logical OR to handle empty strings
+    const [code, setCode] = useState<string>(() => prompt || defaultCode);
     const [detectedLanguage, setDetectedLanguage] = useState<string>(
         "No Language Detected"
     );
@@ -119,15 +148,6 @@ export default function SimpleTextArea({
         }, 300)
     ).current;
 
-    useEffect(() => {
-        setCode(prompt);
-        debouncedDetectLanguage(prompt);
-
-        return () => {
-            debouncedDetectLanguage.cancel();
-        };
-    }, [prompt, debouncedDetectLanguage]);
-
     // Function to detect language
     const detectLanguage = (code: string) => {
         if (!code.trim()) {
@@ -146,10 +166,17 @@ export default function SimpleTextArea({
         }
     };
 
+    // Invoke language detection on initial render
+    useEffect(() => {
+        detectLanguage(code);
+    }, []); // Empty dependency array ensures this runs once on mount
+
     // Function to handle code changes
     const handleCodeChange = (newCode: string) => {
         setCode(newCode);
-        setPrompt(newCode);
+        if (setPrompt) {
+            setPrompt(newCode);
+        }
         debouncedDetectLanguage(newCode);
     };
 
@@ -475,6 +502,16 @@ export default function SimpleTextArea({
         }
     };
 
+    // ======== Clear Code Functionality ======== //
+
+    // Function to clear the code editor
+    const clearCode = () => {
+        setCode("");
+        if (setPrompt) {
+            setPrompt("");
+        }
+    };
+
     return (
         <div className="flex justify-center items-center w-full h-full relative">
             <div
@@ -561,7 +598,11 @@ export default function SimpleTextArea({
                 <div className="bg-[#18181b] dark:bg-neutral-900 p-2 rounded-t-lg flex flex-wrap justify-between items-center text-white" /* Changed text color to white and added flex-wrap */>
                     {/* Detected Language Display */}
                     <span className="text-indigo-400 font-mono mb-2 sm:mb-0">
-                        {detectedLanguage !== "plaintext" ? detectedLanguage.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()) : "No Language Detected"}
+                        {detectedLanguage !== "plaintext"
+                            ? detectedLanguage
+                                  .replace(/-/g, " ")
+                                  .replace(/\b\w/g, (char) => char.toUpperCase())
+                            : "No Language Detected"}
                     </span>
 
                     {/* Right Side Controls */}
@@ -571,6 +612,12 @@ export default function SimpleTextArea({
                             className="w-5 h-5 text-gray-300 cursor-pointer hover:text-gray-500" // Adjusted text color
                             onClick={generateScreenshot}
                             aria-label="Download Screenshot"
+                        />
+                        {/* Rotate-Ccw Icon */}
+                        <RotateCcw
+                            className="w-5 h-5 text-gray-300 cursor-pointer hover:text-gray-500" // Adjusted text color
+                            onClick={clearCode}
+                            aria-label="Clear Code Editor"
                         />
                         {/* Theme Dropdown */}
                         <select
@@ -726,4 +773,6 @@ export default function SimpleTextArea({
             </div>
         </div>
     );
-}
+
+    }
+
