@@ -89,5 +89,18 @@ input[type=number]::-ms-clear,
 input[type=number]::-ms-reveal {
   display: none;
 }
+/* Prevent scrolling on the entire page */
+html, body {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+}
+
+/* Ensure the content doesn't overflow */
+.editor-container {
+  max-height: 100vh;
+  overflow: auto;
+}
 
 
