@@ -1,6 +1,5 @@
 import React from "react";
 import Editor from "react-simple-code-editor";
-import hljs from "highlight.js/lib/core";
 
 interface CodeEditorProps {
     code: string;

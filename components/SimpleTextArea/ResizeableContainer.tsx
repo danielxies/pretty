@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { MoveHorizontal, MoveVertical, MoveDiagonal, MoveDiagonal2 } from "lucide-react";
+import React, { useState } from "react";
+import { MoveVertical } from "lucide-react";
 import useResize from "../hooks/useResize";
 
 interface ResizableContainerProps {
