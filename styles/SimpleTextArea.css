@@ -104,3 +104,266 @@ html, body {
 }
 
 
+/* styles/SimpleTextArea.css */
+
+/* Remove boldness from syntax highlighting */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-symbol,
+.hljs-title,
+.hljs-section,
+.hljs-name,
+.hljs-attribute,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-link,
+.hljs-selector-class,
+.hljs-selector-id,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-bullet,
+.hljs-code,
+.hljs-comment,
+.hljs-doctag,
+.hljs-formula,
+.hljs-meta,
+.hljs-regexp,
+.hljs-string,
+.hljs-subst,
+.hljs-type,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-addition,
+.hljs-deletion {
+  font-weight: normal !important;
+}
+
+/* Apply custom font to the code editor */
+.custom-editor {
+  font-family: 'GggSans', monospace;
+}
+
+/* Remove scrollbar from the Editor's internal textarea */
+.custom-editor textarea {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+}
+
+.custom-editor textarea::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Remove border and outline from the internal textarea */
+.custom-editor textarea {
+  border: none;
+  outline: none;
+  resize: none; /* Prevent manual resizing */
+}
+
+.select {
+  border: none;
+  outline: none;
+}
+
+/* Ensure the pre tag wraps content */
+.editor-container pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Hide spinners for number inputs */
+
+/* Chrome, Safari, Edge, Opera */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Optional: Remove arrows in IE */
+input[type=number]::-ms-clear,
+input[type=number]::-ms-reveal {
+  display: none;
+}
+
+/* Prevent scrolling on the entire page */
+html, body {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+}
+
+/* Ensure the content doesn't overflow */
+.editor-container {
+  max-height: 100vh;
+  overflow: auto;
+}
+
+/* Custom Dropdown Styles */
+.custom-dropdown {
+  position: relative;
+  width: 200px; /* Adjust as needed */
+  font-family: 'GggSans', monospace; /* Monospace font */
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.dropdown-header {
+  background-color: #1a1a1a; /* Dark background */
+  color: #ffffff; /* White text */
+  padding: 8px 12px;
+  border: 1px solid #333333; /* Dark border */
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dropdown-selected {
+  flex-grow: 1;
+}
+
+.dropdown-arrow {
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  padding: 3px;
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(-135deg);
+}
+
+.dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #1a1a1a; /* Dark background */
+  border: 1px solid #333333;
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  border-radius: 0 0 4px 4px;
+}
+
+.dropdown-option {
+  padding: 8px 12px;
+  color: #ffffff; /* White text */
+  background-color: #1a1a1a;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-option:hover {
+  background-color: #333333;
+}
+
+.dropdown-option.selected {
+  background-color: #444444;
+}
+
+/* Header Styles */
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background-color: #121212; /* Dark header background */
+  color: #ffffff;
+  font-family: 'GggSans', monospace;
+}
+
+.header-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-label {
+  font-weight: bold;
+}
+
+.font-size-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.font-button {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border: 1px solid #333333;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'GggSans', monospace;
+}
+
+.font-button:hover {
+  background-color: #333333;
+}
+
+.action-button {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border: 1px solid #333333;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'GggSans', monospace;
+  margin-left: 10px;
+}
+
+.action-button:hover {
+  background-color: #333333;
+}
+
+/* Custom Dropdown Overrides */
+.custom-dropdown select {
+  display: none;
+}
+
+/* Ensure pre tags have transparent background */
+.hljs {
+  background: transparent !important; /* Makes background inherit from parent */
+}
+
+/* Additional Styles as Needed */
+
+/* Remove default focus outline and add a custom one */
+.custom-dropdown:focus-within .dropdown-header {
+  border-color: #555555; /* Change border color on focus */
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2); /* Subtle shadow */
+}
+
+/* Code Editor Styles */
+.editor-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.editor-wrapper pre {
+  margin: 0;
+  padding: 10px;
+  background: transparent;
+  color: inherit;
+  font-family: 'GggSans', monospace;
+}
+
+/* Highlight Overlay Styles */
+.absolute.bg-blue-500 {
+  background-color: rgba(59, 130, 246, 0.25); /* Blue with opacity */
+}

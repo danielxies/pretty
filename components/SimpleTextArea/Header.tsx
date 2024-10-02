@@ -1,21 +1,20 @@
-// ./SimpleTextArea/Header.tsx
-
 import React from "react";
-import { Camera, RotateCcw, Plus, Minus, Sparkles } from "lucide-react";
+import { Camera, RotateCcw, Sparkles } from "lucide-react";
+import CustomDropdown from "./CustomDropdown";
 
 interface HeaderProps {
     detectedLanguage: string;
     currentTheme: string;
     availableThemes: { name: string; displayName: string }[];
-    onThemeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+    onThemeChange: (value: string) => void;
     fontSize: number;
     fontSizeOptions: number[];
     onIncreaseFont: () => void;
     onDecreaseFont: () => void;
-    onFontSizeSelect: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+    onFontSizeSelect: (value: number) => void;
     onScreenshot: () => void;
     onClear: () => void;
-    onEditScreenshot: () => void; // New prop for Sparkles button
+    onEditScreenshot: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -33,9 +32,9 @@ const Header: React.FC<HeaderProps> = ({
     onEditScreenshot,
 }) => {
     return (
-        <div className="bg-[#18181b] dark:bg-neutral-900 p-2 rounded-t-lg flex flex-wrap justify-between items-center text-white">
+        <div className="header-container flex justify-between items-center px-4 py-2 bg-[#171717] rounded-t-lg">
             {/* Detected Language Display */}
-            <span className="text-indigo-400 font-mono mb-2 sm:mb-0">
+            <span className="language-display font-medium text-lg">
                 {detectedLanguage !== "plaintext"
                     ? detectedLanguage
                           .replace(/-/g, " ")
@@ -43,65 +42,59 @@ const Header: React.FC<HeaderProps> = ({
                     : "No Language Detected"}
             </span>
 
-            {/* Right Side Controls */}
-            <div className="flex items-center space-x-4 flex-wrap">
+            {/* Control Buttons */}
+            <div className="controls flex items-center space-x-4">
                 {/* Sparkles Icon */}
-                <Sparkles
-                    className="w-5 h-5 text-gray-300 cursor-pointer hover:text-gray-500"
-                    onClick={onEditScreenshot}
-                    aria-label="Edit Screenshot"
-                />
+                <button onClick={onEditScreenshot} aria-label="Edit Screenshot">
+                    <Sparkles className="icon text-gray-500 hover:text-gray-800" />
+                </button>
+
                 {/* Camera Icon */}
-                <Camera
-                    className="w-5 h-5 text-gray-300 cursor-pointer hover:text-gray-500"
-                    onClick={onScreenshot}
-                    aria-label="Download Screenshot"
-                />
-                {/* Rotate-Ccw Icon */}
-                <RotateCcw
-                    className="w-5 h-5 text-gray-300 cursor-pointer hover:text-gray-500"
-                    onClick={onClear}
-                    aria-label="Clear Code Editor"
-                />
+                <button onClick={onScreenshot} aria-label="Download Screenshot">
+                    <Camera className="icon text-gray-500 hover:text-gray-800" />
+                </button>
+
+                {/* Clear Editor Icon */}
+                <button onClick={onClear} aria-label="Clear Code Editor">
+                    <RotateCcw className="icon text-gray-500 hover:text-gray-800" />
+                </button>
+
                 {/* Theme Dropdown */}
-                <select
-                    value={currentTheme}
+                <CustomDropdown
+                    options={availableThemes.map((theme) => ({
+                        value: theme.name,
+                        label: theme.displayName,
+                    }))}
+                    selectedValue={currentTheme}
                     onChange={onThemeChange}
-                    className="border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white font-mono text-sm mb-2 sm:mb-0"
-                    aria-label="Select theme"
-                >
-                    {availableThemes.map((theme) => (
-                        <option key={theme.name} value={theme.name}>
-                            {theme.displayName}
-                        </option>
-                    ))}
-                </select>
+                    placeholder="Select Theme"
+                />
 
                 {/* Font Size Controls */}
-                <div className="flex items-center space-x-1">
-                    <Minus
-                        className="w-4 h-4 text-gray-300 cursor-pointer hover:text-gray-500"
+                <div className="font-size-controls flex items-center space-x-2">
+                    <CustomDropdown
+                        options={fontSizeOptions.map((size) => ({
+                            value: size.toString(),
+                            label: size.toString(),
+                        }))}
+                        selectedValue={fontSize.toString()}
+                        onChange={(value) => onFontSizeSelect(parseInt(value, 10))}
+                        placeholder="Font Size"
+                    />
+                    <button
                         onClick={onDecreaseFont}
-                        aria-label="Decrease font size"
-                    />
-                    {/* Font Size Dropdown */}
-                    <select
-                        value={fontSize}
-                        onChange={onFontSizeSelect}
-                        className="w-16 text-center border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white font-sm"
-                        aria-label="Select font size"
+                        className="text-xl"
+                        aria-label="Decrease Font Size"
                     >
-                        {fontSizeOptions.map((size) => (
-                            <option key={size} value={size}>
-                                {size}
-                            </option>
-                        ))}
-                    </select>
-                    <Plus
-                        className="w-4 h-4 text-gray-300 cursor-pointer hover:text-gray-500"
+                        -
+                    </button>
+                    <button
                         onClick={onIncreaseFont}
-                        aria-label="Increase font size"
-                    />
+                        className="text-xl"
+                        aria-label="Increase Font Size"
+                    >
+                        +
+                    </button>
                 </div>
             </div>
         </div>

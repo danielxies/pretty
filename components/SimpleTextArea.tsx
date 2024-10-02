@@ -164,8 +164,7 @@ const SimpleTextArea: React.FC<SimpleTextAreaProps> = ({
     };
 
     // Handle theme change for code editor
-    const handleThemeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const newTheme = e.target.value;
+    const handleThemeChange = (newTheme: string) => {
         setCurrentTheme(newTheme);
     };
 
@@ -210,11 +209,8 @@ const SimpleTextArea: React.FC<SimpleTextAreaProps> = ({
         }
     };
 
-    const handleFontSizeSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = parseInt(e.target.value, 10);
-        if (!isNaN(value)) {
-            setFontSize(value);
-        }
+    const handleFontSizeSelect = (value: number) => {
+        setFontSize(value);
     };
 
     // Handle window resize
@@ -434,7 +430,7 @@ const SimpleTextArea: React.FC<SimpleTextAreaProps> = ({
 
                 {/* Editor Container */}
                 <div
-                    className={`w-full border-none resize-none overflow-y-auto overflow-x-hidden focus:outline-none focus:ring-0 rounded-b-lg relative flex flex-row bg-[#18181b] dark:bg-neutral-900 text-white`}
+                    className={`w-full border-none resize-none overflow-y-auto overflow-x-hidden focus:outline-none focus:ring-0 rounded-b-lg relative flex flex-row bg-neutral-900 text-white`}
                     style={{
                         fontFamily: "monospace",
                         height: `calc(${dimensions.height}px - 40px)`,
