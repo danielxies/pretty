@@ -1,4 +1,6 @@
 // ./SimpleTextArea/SimpleTextArea.tsx
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @next/next/no-img-element */
 
 import React, { useState, useEffect, useRef } from "react";
 import hljs from "highlight.js/lib/core";
