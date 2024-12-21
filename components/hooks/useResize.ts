@@ -26,59 +26,15 @@ const useResize = (
         // Prevent text selection during resizing
         document.body.classList.add("no-select");
 
-        // Add event listeners
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-    };
 
-    const handleMouseMove = useCallback((e: MouseEvent) => {
-        if (!isResizingRef.current) return;
-        
-        const dx = e.clientX - startPosRef.current.x;
-        const dy = e.clientY - startPosRef.current.y;
-
-        let newWidth = startSizeRef.current.width;
-        let newHeight = startSizeRef.current.height;
-
-        // Set minimum and maximum sizes
-        newWidth = Math.max(newWidth, 300); // minimum width
-        newHeight = Math.max(newHeight, 200); // minimum height
-
-        // Set maximum size based on 90% of viewport
-        const maxWidth = window.innerWidth * 0.9; // 90% of viewport width
-        const maxHeight = window.innerHeight * 0.9; // 90% of viewport height
-        newWidth = Math.min(newWidth, maxWidth);
-        newHeight = Math.min(newHeight, maxHeight);
-
-        setDimensions({
-            width: newWidth,
-            height: newHeight,
-        });
-    }, [setDimensions]);
-
-    const handleMouseUp = useCallback(() => {
-        isResizingRef.current = false;
-        resizeDirectionRef.current = null;
 
         // Allow text selection after resizing
         document.body.classList.remove("no-select");
 
-        // Remove event listeners
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-    }, [handleMouseMove]);
-
-    // Cleanup event listeners on unmount
-    useEffect(() => {
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-
         return () => {
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
             document.body.classList.remove("no-select");
         };
-    }, [handleMouseMove, handleMouseUp]);
+    };
 
     return { handleMouseDown, containerRef, isResizing: isResizingRef.current };
 };
