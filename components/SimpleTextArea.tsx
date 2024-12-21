@@ -80,7 +80,22 @@ type("try it below");
     \\    ,     ;-\`
 >   \\    /
     (_,-'\`> .'
-jgs      (_,'                          
+hellaur   (_,'                          
+"""
+"""
+\`;-\\.          ___,
+  \`.\`\\_...._/\\.\`-"\`
+    \\        /      ,
+    /()   () \\    .' \`-._
+   |)  .    ()\\  /   _.'
+   \\  -'-     ,; '. <
+    ;.__     ,;|   > \\
+   / ,    / ,  |.-'.-'
+  (_/    (_/ ,;|.<\`
+    \\    ,     ;-\`
+>   \\    /
+    (_,-'\`> .'
+ozz      (_,'                          
 """
 
 // <--------- click here !!
@@ -102,8 +117,8 @@ const SimpleTextArea: React.FC<SimpleTextAreaProps> = ({
     const [detectedLanguage, setDetectedLanguage] = useState<string>("No Language Detected");
     const [currentTheme, setCurrentTheme] = useState("github-dark");
     const [dimensions, setDimensions] = useState<{ width: number; height: number }>({
-        width: 1400,
-        height: 650,
+        width: window.innerWidth,
+        height: window.innerHeight,
     });
     const [fontSize, setFontSize] = useState<number>(11);
     const fontSizeOptions = [8, 11, 12, 13, 14, 15, 16, 18, 22, 24, 25];
@@ -216,10 +231,10 @@ const SimpleTextArea: React.FC<SimpleTextAreaProps> = ({
     // Handle window resize
     useEffect(() => {
         const handleResize = () => {
-            setDimensions((prev) => ({
-                width: Math.min(window.innerWidth * 0.9, prev.width),
-                height: Math.min(window.innerHeight * 0.9, prev.height),
-            }));
+            setDimensions({
+                width: window.innerWidth,
+                height: window.innerHeight,
+            });
         };
 
         window.addEventListener("resize", handleResize);
@@ -386,20 +401,6 @@ const SimpleTextArea: React.FC<SimpleTextAreaProps> = ({
         }
     };
 
-    // Function to handle Sparkles button click (open modal)
-    const handleEditScreenshot = async () => {
-        if (breakpoints.length !== 2) {
-            alert("Please set exactly two breakpoints to edit a screenshot.");
-            return;
-        }
-
-        const imgData = await generateScreenshotDataURL();
-        if (imgData) {
-            setModalImageSrc(imgData);
-            setIsModalOpen(true);
-        }
-    };
-
     // Clear code editor
     const clearCode = () => {
         setCode("");
@@ -424,8 +425,6 @@ const SimpleTextArea: React.FC<SimpleTextAreaProps> = ({
                     onFontSizeSelect={handleFontSizeSelect}
                     onScreenshot={generateAndDownloadScreenshot} // Camera button
                     onClear={clearCode}
-                    onEditScreenshot={handleEditScreenshot} // Sparkles button
-                    // Removed uiTheme and toggleTheme props as light mode is no longer supported
                 />
 
                 {/* Editor Container */}

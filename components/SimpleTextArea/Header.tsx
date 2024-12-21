@@ -14,7 +14,6 @@ interface HeaderProps {
     onFontSizeSelect: (value: number) => void;
     onScreenshot: () => void;
     onClear: () => void;
-    onEditScreenshot: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -29,7 +28,6 @@ const Header: React.FC<HeaderProps> = ({
     onFontSizeSelect,
     onScreenshot,
     onClear,
-    onEditScreenshot,
 }) => {
     return (
         <div className="header-container flex justify-between items-center px-4 py-2 bg-[#171717] rounded-t-lg">
@@ -44,10 +42,6 @@ const Header: React.FC<HeaderProps> = ({
 
             {/* Control Buttons */}
             <div className="controls flex items-center space-x-4">
-                {/* Sparkles Icon */}
-                <button onClick={onEditScreenshot} aria-label="Edit Screenshot">
-                    <Sparkles className="icon text-gray-500 hover:text-gray-800" />
-                </button>
 
                 {/* Camera Icon */}
                 <button onClick={onScreenshot} aria-label="Download Screenshot">

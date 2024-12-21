@@ -7,8 +7,8 @@ export default function Home() {
   const [prompt, setPrompt] = useState("");
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-8 bg-black font-[family-name:var(--font-geist-sans)]">
-      <main className="w-full max-w-4xl">
+    <div className="flex items-center justify-center h-screen w-screen bg-black font-[family-name:var(--font-geist-sans)]">
+      <main className="h-full w-full">
         <SimpleTextArea
           prompt={prompt}
           setPrompt={setPrompt}
