@@ -27,8 +27,8 @@ const useResize = (
         document.body.classList.add("no-select");
 
         // Add event listeners
-        window.addEventListener("mousemove", handleMouseMove);
-        window.addEventListener("mouseup", handleMouseUp);
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
     };
 
     const handleMouseMove = (e: globalThis.MouseEvent) => {
@@ -80,18 +80,21 @@ const useResize = (
         document.body.classList.remove("no-select");
 
         // Remove event listeners
-        window.removeEventListener("mousemove", handleMouseMove);
-        window.removeEventListener("mouseup", handleMouseUp);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
     };
 
     // Cleanup event listeners on unmount
     useEffect(() => {
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+
         return () => {
-            window.removeEventListener("mousemove", handleMouseMove);
-            window.removeEventListener("mouseup", handleMouseUp);
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
             document.body.classList.remove("no-select");
         };
-    }, []);
+    }, [handleMouseMove, handleMouseUp]);
 
     return { handleMouseDown, containerRef, isResizing: isResizingRef.current };
 };

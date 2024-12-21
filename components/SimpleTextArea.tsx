@@ -295,7 +295,6 @@ const SimpleTextArea: React.FC<SimpleTextAreaProps> = ({
 
     // Screenshot Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalImageSrc, setModalImageSrc] = useState<string>("");
 
     // Function to generate screenshot data URL
     const generateScreenshotDataURL = async (): Promise<string | null> => {
@@ -479,12 +478,6 @@ const SimpleTextArea: React.FC<SimpleTextAreaProps> = ({
                 </div>
             </ResizableContainer>
 
-            {/* Screenshot Modal */}
-            <ScreenshotModal
-                isOpen={isModalOpen}
-                onRequestClose={() => setIsModalOpen(false)}
-                imageSrc={modalImageSrc}
-            />
         </>
     );
 };

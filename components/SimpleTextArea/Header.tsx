@@ -1,5 +1,5 @@
 import React from "react";
-import { Camera, RotateCcw, Sparkles } from "lucide-react";
+import { Camera, RotateCcw, Trash } from "lucide-react";
 import CustomDropdown from "./CustomDropdown";
 
 interface HeaderProps {
