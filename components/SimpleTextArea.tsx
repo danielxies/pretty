@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import hljs from "highlight.js/lib/core";
 import debounce from "lodash.debounce";
 import html2canvas from "html2canvas";
-import ResizableContainer from "./SimpleTextArea/ResizeableContainer";
 import Header from "./SimpleTextArea/Header";
 import LineNumbers from "./SimpleTextArea/LineNumbers";
 import CodeEditor from "./SimpleTextArea/CodeEditor";
@@ -115,10 +114,6 @@ const SimpleTextArea: React.FC<SimpleTextAreaProps> = ({
     const [code, setCode] = useState<string>(() => prompt || defaultCode);
     const [detectedLanguage, setDetectedLanguage] = useState<string>("No Language Detected");
     const [currentTheme, setCurrentTheme] = useState("github-dark");
-    const [dimensions, setDimensions] = useState<{ width: number; height: number }>({
-        width: window.innerWidth,
-        height: window.innerHeight,
-    });
     const [fontSize, setFontSize] = useState<number>(11);
     const fontSizeOptions = [8, 11, 12, 13, 14, 15, 16, 18, 22, 24, 25];
 
@@ -226,21 +221,6 @@ const SimpleTextArea: React.FC<SimpleTextAreaProps> = ({
     const handleFontSizeSelect = (value: number) => {
         setFontSize(value);
     };
-
-    // Handle window resize
-    useEffect(() => {
-        const handleResize = () => {
-            setDimensions({
-                width: window.innerWidth,
-                height: window.innerHeight,
-            });
-        };
-
-        window.addEventListener("resize", handleResize);
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    }, []);
 
     // Handle gutter (line number) clicks
     const handleToggleBreakpoint = (lineNumber: number) => {
@@ -405,8 +385,8 @@ const SimpleTextArea: React.FC<SimpleTextAreaProps> = ({
     };
 
     return (
-        <>
-            <ResizableContainer initialWidth={dimensions.width} initialHeight={dimensions.height}>
+        <div className="w-screen h-screen flex justify-center items-center">
+            <div className="w-full h-full relative rounded-2xl bg-[#18181b] dark:bg-neutral-900 shadow-lg">
                 {/* Header */}
                 <Header
                     detectedLanguage={detectedLanguage}
@@ -427,8 +407,7 @@ const SimpleTextArea: React.FC<SimpleTextAreaProps> = ({
                     className={`w-full border-none resize-none overflow-y-auto overflow-x-hidden focus:outline-none focus:ring-0 rounded-b-lg relative flex flex-row bg-neutral-900 text-white`}
                     style={{
                         fontFamily: "monospace",
-                        height: `calc(${dimensions.height}px - 40px)`,
-                        width: `calc(${dimensions.width}px - 1px)`,
+                        height: "calc(100% - 40px)", // Subtract header height
                         overflowY: "auto",
                         overflowX: "hidden",
                         boxSizing: "border-box",
@@ -472,9 +451,8 @@ const SimpleTextArea: React.FC<SimpleTextAreaProps> = ({
                         />
                     </div>
                 </div>
-            </ResizableContainer>
-
-        </>
+            </div>
+        </div>
     );
 };
 
