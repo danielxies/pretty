@@ -1,5 +1,5 @@
 import React from "react";
-import { Camera, RotateCcw, Trash } from "lucide-react";
+import { Camera, Trash } from "lucide-react";
 import CustomDropdown from "./CustomDropdown";
 
 interface HeaderProps {
@@ -50,7 +50,7 @@ const Header: React.FC<HeaderProps> = ({
 
                 {/* Clear Editor Icon */}
                 <button onClick={onClear} aria-label="Clear Code Editor">
-                    <RotateCcw className="icon text-gray-500 hover:text-gray-800" />
+                    <Trash className="icon text-gray-500 hover:text-gray-800" />
                 </button>
 
                 {/* Theme Dropdown */}

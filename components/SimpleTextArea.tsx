@@ -8,7 +8,6 @@ import ResizableContainer from "./SimpleTextArea/ResizeableContainer";
 import Header from "./SimpleTextArea/Header";
 import LineNumbers from "./SimpleTextArea/LineNumbers";
 import CodeEditor from "./SimpleTextArea/CodeEditor";
-import ScreenshotModal from "./SimpleTextArea/ScreenshotModal"; // Import the updated modal
 import "../styles/SimpleTextArea.css";
 
 // Import languages
@@ -158,7 +157,7 @@ const SimpleTextArea: React.FC<SimpleTextAreaProps> = ({
     // Initial language detection
     useEffect(() => {
         detectLanguage(code);
-    }, []);
+    }, [code]);
 
     // Handle code change
     const handleCodeChange = (newCode: string) => {
@@ -292,9 +291,6 @@ const SimpleTextArea: React.FC<SimpleTextAreaProps> = ({
             }
         }
     }
-
-    // Screenshot Modal State
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Function to generate screenshot data URL
     const generateScreenshotDataURL = async (): Promise<string | null> => {

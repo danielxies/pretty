@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 
 const useResize = (
     dimensions: { width: number; height: number },
@@ -31,30 +31,14 @@ const useResize = (
         document.addEventListener('mouseup', handleMouseUp);
     };
 
-    const handleMouseMove = (e: globalThis.MouseEvent) => {
-        if (!isResizingRef.current || !resizeDirectionRef.current) return;
-
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+        if (!isResizingRef.current) return;
+        
         const dx = e.clientX - startPosRef.current.x;
         const dy = e.clientY - startPosRef.current.y;
 
         let newWidth = startSizeRef.current.width;
         let newHeight = startSizeRef.current.height;
-
-        const direction = resizeDirectionRef.current;
-
-        // Adjust width and height based on direction
-        if (direction.includes("right")) {
-            newWidth = startSizeRef.current.width + dx;
-        }
-        if (direction.includes("left")) {
-            newWidth = startSizeRef.current.width - dx;
-        }
-        if (direction.includes("bottom")) {
-            newHeight = startSizeRef.current.height + dy;
-        }
-        if (direction.includes("top")) {
-            newHeight = startSizeRef.current.height - dy;
-        }
 
         // Set minimum and maximum sizes
         newWidth = Math.max(newWidth, 300); // minimum width
@@ -70,9 +54,9 @@ const useResize = (
             width: newWidth,
             height: newHeight,
         });
-    };
+    }, [setDimensions]);
 
-    const handleMouseUp = () => {
+    const handleMouseUp = useCallback(() => {
         isResizingRef.current = false;
         resizeDirectionRef.current = null;
 
@@ -82,7 +66,7 @@ const useResize = (
         // Remove event listeners
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
-    };
+    }, [handleMouseMove]);
 
     // Cleanup event listeners on unmount
     useEffect(() => {
